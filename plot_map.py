@@ -58,7 +58,7 @@ for polygon in polygons:
     ).add_to(m)
 
 # マップをHTMLファイルとして保存
-m.save('map_with_alerts.html')
+m.save('index.html')
 
 # マップの表示
 m
