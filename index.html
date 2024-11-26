@@ -56,7 +56,53 @@
                 }
             );
 
-            
+
+            // ユーザーの位置を表示するマーカー
+            var userMarker = L.marker([0, 0], {
+                icon: L.icon({
+                    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Location_dot.svg/120px-Location_dot.svg.png',
+                    iconSize: [32, 32]
+                })
+            }).addTo(map_bcf9bf6a11670acbdfa2543065a2abe6);
+
+            // 位置情報を取得
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    var accuracy = position.coords.accuracy;
+
+                    // マップの中央をユーザーの位置に変更
+                    map_bcf9bf6a11670acbdfa2543065a2abe6.setView([lat, lon], 15);
+
+                    // ユーザーの位置を更新
+                    userMarker.setLatLng([lat, lon]);
+
+                    // ポップアップに精度も表示
+                    userMarker.bindPopup('あなたの位置: ' + lat.toFixed(6) + ', ' + lon.toFixed(6) + '<br>精度: ' + accuracy + 'm').openPopup();
+                });
+            } else {
+                alert("このブラウザでは位置情報を取得できません。");
+            }
+
+            // デバイスの向き（オリエンテーション）の取得（もし可能なら）
+            var userHeading = 0; // 初期値
+
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener("deviceorientation", function(event) {
+                    userHeading = event.alpha || 0;
+                    // 向きが変更されたら、ユーザーの向きにアイコンを回転させる
+                    userMarker.setIcon(L.icon({
+                        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Location_dot.svg/120px-Location_dot.svg.png',
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16], // アイコンの中心に合わせる
+                        rotationAngle: userHeading  // アイコンの回転角度を設定
+                    }));
+                });
+            } else {
+                console.log("デバイスの向きを取得できません");
+            }
+
 
         
     
