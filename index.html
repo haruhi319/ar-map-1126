@@ -103,6 +103,37 @@
                 console.log("デバイスの向きを取得できません");
             }
 
+            
+            // 半径100mの円を描画する
+            var circle = L.circle([0, 0], {
+                color: 'yellow',        // 円の線の色
+                 fillColor: 'yellow',    // 円の内側の色
+                fillOpacity: 0.3,       // 内側の透明度（0.0〜1.0）
+                radius: 100             // 半径100m
+            }).addTo(map_bcf9bf6a11670acbdfa2543065a2abe6);
+
+            // 位置情報を取得
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    var accuracy = position.coords.accuracy;
+
+                    // マップの中央をユーザーの位置に変更
+                    map_bcf9bf6a11670acbdfa2543065a2abe6.setView([lat, lon], 15);
+
+                    // ユーザーの位置を更新
+                    userMarker.setLatLng([lat, lon]);
+
+                    // 円の位置を更新（自分の位置を中心に設定）
+                    circle.setLatLng([lat, lon]);
+
+                    // ポップアップに精度も表示
+                    userMarker.bindPopup('あなたの位置: ' + lat.toFixed(6) + ', ' + lon.toFixed(6) + '<br>精度: ' + accuracy + 'm').openPopup();
+                });
+            } else {
+                alert("このブラウザでは位置情報を取得できません。");
+            }
 
         
     
