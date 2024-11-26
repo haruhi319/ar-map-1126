@@ -64,12 +64,12 @@
         // 自分の位置を表示するためのマーカー
         var userMarker = L.marker([35.5, 139.8]).addTo(map);
 
-        // 自分の位置を示す円 (半径1000m)
+        // 自分の位置を示す円 (半径20000m)
         var circle = L.circle([35.5, 139.8], {
             color: 'yellow',
             fillColor: 'yellow',
             fillOpacity: 0.3,
-            radius: 1000
+            radius: 20000
         }).addTo(map);
 
         // 青ピンと赤多角形の情報 (仮のデータ)
@@ -152,8 +152,8 @@
                 var distance = map.latLng([lat, lon]).distanceTo(userMarker.getLatLng());
                 var direction = getDirection(userMarker.getLatLng(), L.latLng(lat, lon));
 
-                // 自分の位置から1000m円内にピンが入っているかチェック
-                if (userMarker.getLatLng().distanceTo([lat, lon]) <= 1000) {
+                // 自分の位置から20000m円内にピンが入っているかチェック
+                if (userMarker.getLatLng().distanceTo([lat, lon]) <= 20000) {
                     infoContent.push("<li><b>" + name + "</b> (距離: " + distance.toFixed(2) + "m, 方向: " + direction.toFixed(2) + "°)</li>");
                 }
             });
@@ -169,8 +169,8 @@
                 var closestDistance = userMarker.getLatLng().distanceTo(closestPoint);
                 var closestDirection = getDirection(userMarker.getLatLng(), closestPoint);
 
-                // 自分の位置から1000m円内に多角形が入っているかチェック
-                if (userMarker.getLatLng().distanceTo(closestPoint) <= 1000) {
+                // 自分の位置から20000m円内に多角形が入っているかチェック
+                if (userMarker.getLatLng().distanceTo(closestPoint) <= 20000) {
                     infoContent.push("<li><b>" + polygon.popup + "</b> (最寄点距離: " + closestDistance.toFixed(2) + "m, 方向: " + closestDirection.toFixed(2) + "°)</li>");
                 }
             });
