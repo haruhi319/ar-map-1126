@@ -80,6 +80,29 @@
             { coordinates: [[35.56, 139.8], [35.57, 139.8], [35.57, 139.9], [35.56, 139.9]], popup: '航行警報1', color: 'red', fillOpacity: 0.3 }
         ];
 
+        // ピンと多角形を一度だけ追加する関数
+        function addPinsAndPolygons() {
+            // 1. 青ピンの表示
+            coordinates.forEach(function(coord, index) {
+                var lat = coord[0];
+                var lon = coord[1];
+                var name = names[index];
+
+                // ピンを追加
+                var pin = L.marker([lat, lon]).addTo(map);
+                pin.bindPopup(name);
+            });
+
+            // 2. 赤多角形の表示
+            polygons.forEach(function(polygon) {
+                var poly = L.polygon(polygon.coordinates, {
+                    color: polygon.color,
+                    fillOpacity: polygon.fillOpacity
+                }).addTo(map);
+                poly.bindPopup(polygon.popup);
+            });
+        }
+        
         // 自分の位置から方向を計算する関数
         function getDirection(startLatLng, endLatLng) {
             var lat1 = startLatLng.lat;
