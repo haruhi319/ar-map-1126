@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    
-        <script>
-            L_NO_TOUCH = false;
-            L_DISABLE_3D = false;
-        </script>
-    
+    <script>
+        L_NO_TOUCH = false;
+        L_DISABLE_3D = false;
+    </script>
     <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
     <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
-     <style>
-        html, body {width: 100%;height: 100%;margin: 0;padding: 0;}
-        #map {position:absolute;top:0;bottom:0;right:0;left:0;}
+    <style>
+        #map {position: absolute; top: 0; bottom: 0; right: 0; left: 0;}
         #info-box {
             position: fixed; 
             bottom: 10px; 
@@ -44,51 +40,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
-    
-            <meta name="viewport" content="width=device-width,
-                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <style>
-                #map_bcf9bf6a11670acbdfa2543065a2abe6 {
-                    position: relative;
-                    width: 100.0%;
-                    height: 100.0%;
-                    left: 0.0%;
-                    top: 0.0%;
-                }
-                .leaflet-container { font-size: 1rem; }
-            </style>
-        
 </head>
 <body>
-    
-    
-            <div class="folium-map" id="map_bcf9bf6a11670acbdfa2543065a2abe6" ></div>
-            <div id="info-box">
-                <h5>情報</h5>
-                <ul id="info-list"></ul>
-            </div>
-        
-</body>
-<script>
-    
-    
-            var map_bcf9bf6a11670acbdfa2543065a2abe6 = L.map(
-                "map_bcf9bf6a11670acbdfa2543065a2abe6",
-                {
-                    center: [35.5, 139.8],
-                    crs: L.CRS.EPSG3857,
-                    zoom: 10,
-                    zoomControl: true,
-                    preferCanvas: false,
-                }
-            );
+    <div id="map"></div>
+    <div id="info-box">
+        <h5>情報</h5>
+        <ul id="info-list"></ul>
+    </div>
 
+    <script>
+        var map = L.map('map', {
+            center: [35.5, 139.8],
+            zoom: 10,
+            zoomControl: true
+        });
 
-            // 自分の位置を表示するためのマーカー
+        var tileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 自分の位置を表示するためのマーカー
         var userMarker = L.marker([35.5, 139.8]).addTo(map);
 
         // 自分の位置を示す円 (半径1000m)
@@ -100,8 +73,8 @@
         }).addTo(map);
 
         // 青ピンと赤多角形の情報 (仮のデータ)
-        var coordinates = [[35.5554, 140.0873]]; // 例: 水路通報
-        var names = ['水路通報1']; // 例: ピン名
+        var coordinates = [[35.5554, 140.0873]]; // 水路通報
+        var names = ['水路通報1']; // ピン名
 
         var polygons = [
             { coordinates: [[35.56, 139.8], [35.57, 139.8], [35.57, 139.9], [35.56, 139.9]], popup: '航行警報1', color: 'red', fillOpacity: 0.3 }
@@ -164,7 +137,11 @@
 
             // 2. 赤多角形の情報を表示
             polygons.forEach(function(polygon) {
-                var poly = new L.Polygon(polygon.coordinates);
+                var poly = L.polygon(polygon.coordinates, {
+                    color: polygon.color,
+                    fillOpacity: polygon.fillOpacity
+                }).addTo(map);
+
                 var closestPoint = getClosestPoint(userMarker.getLatLng(), poly.getLatLngs());
                 var closestDistance = userMarker.getLatLng().distanceTo(closestPoint);
                 var closestDirection = getDirection(userMarker.getLatLng(), closestPoint);
@@ -193,7 +170,8 @@
             });
         } else {
             alert("位置情報が取得できません");
-        }    
+        }
+
     
             var tile_layer_245df3c1bcc4aaa2a808ac24a2743e2d = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
