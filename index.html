@@ -128,78 +128,7 @@
                 console.error("JSONデータの読み込みに失敗しました:", error);
             });
 
-
-        // 既存のピンを地図に追加
-        pins.forEach(function(pin) {
-            var marker = L.marker(pin.coordinates).addTo(map);
-            marker.bindPopup(pin.popup);
-            pin.marker = marker; // マーカーを参照できるよう保存
-        });
-
-        // 既存の多角形を地図に追加
-        polygons.forEach(function(polygon) {
-            var poly = L.polygon(polygon.coordinates, { color: 'red', fillOpacity: 0.3 }).addTo(map);
-            poly.bindPopup(polygon.popup);
-            polygon.layer = poly; // レイヤーを参照できるよう保存
-        });
-
-        // 情報を更新する関数
-        function updateInfo() {
-            var infoList = document.getElementById('info-list');
-            infoList.innerHTML = ""; // リストをクリア
-
-            var infoContent = [];
-            var userLatLng = userMarker.getLatLng();
-
-            // ピン情報の更新
-            pins.forEach(function(pin) {
-                var distance = userLatLng.distanceTo(pin.coordinates);
-                if (distance <= circle.getRadius()) {
-                    infoContent.push("<li><b>" + pin.popup + "</b> (距離: " + distance.toFixed(2) + "m)</li>");
-                }
-            });
-
-            // 多角形情報の更新
-            polygons.forEach(function(polygon) {
-                var closestPoint = getClosestPoint(userLatLng, polygon.coordinates);
-                var distance = userLatLng.distanceTo(closestPoint);
-                if (distance <= circle.getRadius()) {
-                    infoContent.push("<li><b>" + polygon.popup + "</b> (距離: " + distance.toFixed(2) + "m)</li>");
-                }
-            });
-
-            infoList.innerHTML = infoContent.join('');
-        }
-
-        // 最寄点を取得する関数
-        function getClosestPoint(latLng, polygonCoords) {
-            var closest = polygonCoords[0];
-            var closestDistance = latLng.distanceTo(L.latLng(closest));
-
-            polygonCoords.forEach(function(coord) {
-                var distance = latLng.distanceTo(L.latLng(coord));
-                if (distance < closestDistance) {
-                    closest = coord;
-                    closestDistance = distance;
-                }
-            });
-
-            return closest;
-        }
-
-        // 位置情報を監視し、更新
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(function(position) {
-                var lat = position.coords.latitude;
-                var lon = position.coords.longitude;
-                userMarker.setLatLng([lat, lon]);
-                circle.setLatLng([lat, lon]);
-                map.setView([lat, lon], 15);
-
-                // 情報を更新
-                updateInfo();
-            });
-        } else {
+        else {
             alert("位置情報が取得できません");
         }
             
