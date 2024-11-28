@@ -92,9 +92,31 @@
                 console.error("JSONデータの読み込みに失敗しました:", error);
             });
 
-        var polygons = [
-            { coordinates: [[35.56, 139.8], [35.57, 139.8], [35.57, 139.9], [35.56, 139.9]], popup: "航行警報1" }
-        ];
+        // JSONファイルから多角形を追加するコード
+        fetch('polygons.json') // JSONファイルのパスを指定
+            .then(response => response.json())
+            .then(data => {
+                // 各ポリゴンデータを処理
+                data.forEach(polygon => {
+                    const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]); // [緯度, 経度] の形式に変換
+                    const popupText = polygon.popup; // ポップアップ内容
+
+                    // 多角形を地図に追加
+                    const polygonLayer = L.polygon(coordinates, {
+                        color: polygon.color || 'red', // デフォルトで赤色
+                        fillColor: polygon.color || 'red', // 塗りつぶしも赤色
+                        fillOpacity: polygon.fill_opacity || 0.3, // 半透明
+                        weight: 2 // 線の太さ
+                    }).addTo(map);
+
+                    // ポリゴンにポップアップをバインド
+                    polygonLayer.bindPopup(popupText);
+                });
+            })
+            .catch(error => {
+                console.error("JSONデータの読み込みに失敗しました:", error);
+            });
+
 
         // 既存のピンを地図に追加
         pins.forEach(function(pin) {
