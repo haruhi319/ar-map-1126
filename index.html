@@ -138,7 +138,7 @@
                         // ピンが円の範囲内かチェック
                         if (distance <= 20000) {
                             var listItem = document.createElement("li");
-                            listItem.textContent = `${popupText}・${Math.round(distance)}m・${Math.round(direction)}°`;
+                            listItem.textContent = `${lastWord}・${Math.round(distance)}m・${Math.round(direction)}°`;
                             infoList.appendChild(listItem);
                         }
                     });
@@ -183,13 +183,8 @@
                         // 自分の位置から最も近い頂点が円の範囲内かチェック
                         if (closestDistance <= 20000) {
                             var listItem = document.createElement("li");
-                            listItem.textContent = `${polygon.popup}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`;
+                            listItem.textContent = `${popupText}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`;
                             infoList.appendChild(listItem);
-
-                            // 多角形を地図に描画
-                            var latLngs = polygon.coordinates.map(coord => L.latLng(coord[0], coord[1]));
-                            L.polygon(latLngs, { color: 'red' }).addTo(map)
-                                .bindPopup(polygon.popup);
                         }
                     });
                 })
