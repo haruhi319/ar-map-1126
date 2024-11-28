@@ -60,37 +60,37 @@
 
         // JSONデータから読み込んだ既存のピンと多角形
         // JSONファイルからピンを追加するコード
-fetch('suirotuuhou.json') // JSONファイルのパスを指定
-    .then(response => response.json())
-    .then(data => {
-        // features 配列から各エントリを処理
-        data.features.forEach(feature => {
-            const geometry = feature.geometry;
-            const attributes = feature.attributes;
+        fetch('suirotuuhou.json') // JSONファイルのパスを指定
+            .then(response => response.json())
+            .then(data => {
+                  // features 配列から各エントリを処理
+                data.features.forEach(feature => {
+                    const geometry = feature.geometry;
+                    const attributes = feature.attributes;
 
-            // 緯度と経度を取得
-            const lat = geometry.y;
-            const lng = geometry.x;
+                    // 緯度と経度を取得
+                    const lat = geometry.y;
+                    const lng = geometry.x;
 
-            // name の最右単語を取得
-            const nameParts = attributes.name.split(" "); // スペースで分割
-            const lastWord = nameParts[nameParts.length - 1]; // 最右単語
+                    // name の最右単語を取得
+                    const nameParts = attributes.name.split(" "); // スペースで分割
+                    const lastWord = nameParts[nameParts.length - 1]; // 最右単語
 
-            // 赤いピンを地図に追加
-            const marker = L.marker([lat, lng], { icon: L.icon({
-                iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-red.png', // 赤いピンのURL
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34]
-            }) }).addTo(map);
+                    // 赤いピンを地図に追加
+                    const marker = L.marker([lat, lng], { icon: L.icon({
+                        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-red.png', // 赤いピンのURL
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34]
+                    }) }).addTo(map);
 
-            // ピンにポップアップを追加
-            marker.bindPopup(lastWord);
-        });
-    })
-    .catch(error => {
-        console.error("JSONデータの読み込みに失敗しました:", error);
-    });
+                    // ピンにポップアップを追加
+                    marker.bindPopup(lastWord);
+                });
+            })
+            .catch(error => {
+                console.error("JSONデータの読み込みに失敗しました:", error);
+            });
 
         var polygons = [
             { coordinates: [[35.56, 139.8], [35.57, 139.8], [35.57, 139.9], [35.56, 139.9]], popup: "航行警報1" }
