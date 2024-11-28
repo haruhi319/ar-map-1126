@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" >
+    <meta charset="UTF-8">
     <script>
         L_NO_TOUCH = false;
         L_DISABLE_3D = false;
@@ -47,7 +47,7 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // 自分の位置を示す赤いピンアイコンURLを修正
+        // 自分の位置を示す青いピンアイコンURLを修正
         const pinIcon = L.icon({
             iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png', // 通常のピンURL
             iconSize: [25, 41], // ピンの大きさ
@@ -143,20 +143,6 @@
             .catch(error => {
                 console.error("JSONデータの読み込みに失敗しました:", error);
             });
-
-        else {
-            alert("位置情報が取得できません");
-        }
-            
-            var tile_layer_245df3c1bcc4aaa2a808ac24a2743e2d = L.tileLayer(
-                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-            );
-        
-    
-            tile_layer_245df3c1bcc4aaa2a808ac24a2743e2d.addTo(map_       polygon_8cf5dc982d1cac870b1027e9990c164d.bindPopup(popup_fcfd5e6ecdfa355f6100170f860cd576)
-        ;
-        
-    
-</script>
+    </script>
+</body>
 </html>
