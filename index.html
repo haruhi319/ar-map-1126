@@ -47,8 +47,16 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
+        // 自分の位置を示す赤いピンアイコンURLを修正
+        const pinIcon = L.icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png', // 通常のピンURL
+            iconSize: [25, 41], // ピンの大きさ
+            iconAnchor: [12, 41], // ピンの基準点
+            popupAnchor: [1, -34] // ポップアップ位置
+        });
+        
         // 自分の位置を表示するためのマーカー
-        var userMarker = L.marker([35.5, 139.8]).addTo(map);
+        var userMarker = L.marker([35.5, 139.8],{ icon: pinIcon }).addTo(map);
 
         // 自分の位置を示す円 (半径20000m)
         var circle = L.circle([35.5, 139.8], {
@@ -63,7 +71,7 @@
         fetch('suirotuuhou.json') // JSONファイルのパスを指定
             .then(response => response.json())
             .then(data => {
-                  // features 配列から各エントリを処理
+                console.log("ピンデータ:", data); // デバッグ用ログ
                 data.features.forEach(feature => {
                     const geometry = feature.geometry;
                     const attributes = feature.attributes;
@@ -77,12 +85,7 @@
                     const lastWord = nameParts[nameParts.length - 1]; // 最右単語
 
                     // 赤いピンを地図に追加
-                    const marker = L.marker([lat, lng], { icon: L.icon({
-                        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-red.png', // 赤いピンのURL
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34]
-                    }) }).addTo(map);
+                    const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map);
 
                     // ピンにポップアップを追加
                     marker.bindPopup(lastWord);
@@ -96,6 +99,7 @@
         fetch('polygons.json') // JSONファイルのパスを指定
             .then(response => response.json())
             .then(data => {
+                console.log("ポリゴンデータ:", data); // デバッグ用ログ
                 // 各ポリゴンデータを処理
                 data.forEach(polygon => {
                     const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]); // [緯度, 経度] の形式に変換
