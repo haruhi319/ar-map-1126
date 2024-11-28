@@ -73,7 +73,7 @@
                     const lng = geometry.x;
 
                     // name の最右単語を取得
-                    const nameParts = attributes.name.split(" "); // スペースで分割
+                    const nameParts = attributes.name.split(/[\s　、,、\-]+/); // スペースで分割
                     const lastWord = nameParts[nameParts.length - 1]; // 最右単語
 
                     // 赤いピンを地図に追加
