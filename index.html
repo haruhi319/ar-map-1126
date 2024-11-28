@@ -56,7 +56,14 @@
         });
         
         // 自分の位置を表示するためのマーカー
-        var userMarker = L.marker([35.5, 139.8],{ icon: pinIcon }).addTo(map);
+        var userMarker = L.marker([35.5, 139.8],{ 
+            icon:L.icon({
+                iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-blue.png', // 青いピンのURL
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34] 
+            })
+        }).addTo(map);
 
         // 自分の位置を示す円 (半径20000m)
         var circle = L.circle([35.5, 139.8], {
