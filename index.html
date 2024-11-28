@@ -118,12 +118,18 @@
             fetch('suirotuuhou.json')
                 .then(response => response.json())
                 .then(data => {
+                    console.log("ピンデータ:", data); // デバッグ用ログ
+
                     data.features.forEach(feature => {
                         const geometry = feature.geometry;
                         const attributes = feature.attributes;
                         const lat = geometry.y;
                         const lng = geometry.x;
                         const popupText = attributes.name; // ポップアップ内容
+
+                        // ピンを地図に表示
+                        L.marker([lat, lng], { icon: pinIcon }).addTo(map)
+                            .bindPopup(popupText);
 
                         // 自分の位置からの距離と向きを計算
                         const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, lat, lng);
@@ -144,6 +150,8 @@
             fetch('polygons.json')
                 .then(response => response.json())
                 .then(data => {
+                    console.log("多角形データ:", data); // デバッグ用ログ
+
                     data.forEach(polygon => {
                         const coordinates = polygon.coordinates;
                         let closestDistance = Infinity;
@@ -163,6 +171,11 @@
                             var listItem = document.createElement("li");
                             listItem.textContent = `${polygon.popup}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`;
                             infoList.appendChild(listItem);
+
+                            // 多角形を地図に描画
+                            var latLngs = polygon.coordinates.map(coord => L.latLng(coord[0], coord[1]));
+                            L.polygon(latLngs, { color: 'red' }).addTo(map)
+                                .bindPopup(polygon.popup);
                         }
                     });
                 })
