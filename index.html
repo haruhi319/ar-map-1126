@@ -47,54 +47,6 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // 自分の位置を示す青いピンアイコンURLを修正
-        const pinIcon = L.icon({
-            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png', // 通常のピンURL
-            iconSize: [25, 41], // ピンの大きさ
-            iconAnchor: [12, 41], // ピンの基準点
-            popupAnchor: [1, -34] // ポップアップ位置
-        });
-
-        // 自分の位置を示す青いマーカー
-        var userLat, userLng;
-        
-        // GPS情報を取得して自分の位置を表示
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                userLat = position.coords.latitude;
-                userLng = position.coords.longitude;
-
-                // 地図の中心を自分の位置に設定
-                map.setView([userLat, userLng], 14);
-
-                // 自分の位置を青いマーカーで表示
-                var userMarker = L.marker([userLat, userLng], {
-                    icon: L.icon({
-                        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-blue.png', // 青いピンのURL
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34]
-                    })
-                }).addTo(map);
-
-                // 自分の位置を中心とした半径20000mの円を描画
-                var circle = L.circle([userLat, userLng], {
-                    color: 'blue',
-                    fillColor: 'blue',
-                    fillOpacity: 0.3,
-                    radius: 20000 // 半径20000m
-                }).addTo(map);
-
-                // 半径内のピンと多角形をチェック
-                updateInfo();
-            }, function(error) {
-                console.error("位置情報の取得に失敗しました:", error);
-            });
-        } else {
-            alert("このブラウザでは位置情報の取得がサポートされていません。");
-        }
-
-    
     // 距離と向きを計算する関数
     function calculateDistanceAndDirection(lat1, lng1, lat2, lng2) {
         var userLocation = L.latLng(lat1, lng1);
@@ -115,6 +67,9 @@
         var infoList = document.getElementById("info-list");
         infoList.innerHTML = ""; // 情報リストをクリア
 
+        // まず、すべてのピンと多角形の情報を格納する配列を作成
+        var items = [];
+
         // ピンの情報を表示
         fetch('suirotuuhou.json')
             .then(response => response.json())
@@ -129,19 +84,29 @@
                     const nameParts = attributes.name.split(/[\s　、,、\-]+/); // スペースで分割
                     const lastWord = nameParts[nameParts.length - 1]; // 最右単語
 
-                    // ピンを地図に表示
-                    const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map)
-                    marker.bindPopup(lastWord);
-
                     // 自分の位置からの距離と向きを計算
                     const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, lat, lng);
 
                     // ピンが円の範囲内かチェック
                     if (distance <= 20000) {
-                        var listItem = document.createElement("li");
-                        listItem.textContent = `${lastWord}・${Math.round(distance)}m・${Math.round(direction)}°`;
-                        infoList.appendChild(listItem);
+                        items.push({
+                            text: `${lastWord}・${Math.round(distance)}m・${Math.round(direction)}°`,
+                            lat, lng // 後で地図にピンを追加するための座標も保存
+                        });
                     }
+                });
+
+                // ピンを地図に追加
+                items.forEach(item => {
+                    L.marker([item.lat, item.lng], { icon: pinIcon }).addTo(map)
+                        .bindPopup(item.text);
+                });
+
+                // リストを更新
+                items.forEach(item => {
+                    var listItem = document.createElement("li");
+                    listItem.textContent = item.text;
+                    infoList.appendChild(listItem);
                 });
             })
             .catch(error => {
@@ -154,20 +119,10 @@
             .then(data => {
                 console.log("多角形データ:", data); // デバッグ用ログ
 
+                // 多角形の情報も処理
                 data.forEach(polygon => {
                     const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]);
                     const popupText = polygon.popup;
-
-                    // 多角形を地図に追加
-                    const polygonLayer = L.polygon(coordinates, {
-                        color: polygon.color || 'red', // デフォルトで赤色
-                        fillColor: polygon.color || 'red', // 塗りつぶしも赤色
-                        fillOpacity: polygon.fill_opacity || 0.3, // 半透明
-                        weight: 2 // 線の太さ
-                    }).addTo(map);
-
-                    // ポリゴンにポップアップをバインド
-                    polygonLayer.bindPopup(popupText);
 
                     let closestDistance = Infinity;
                     let closestPoint = null;
@@ -181,12 +136,32 @@
                         }
                     });
 
-                    // 自分の位置から最も近い頂点が円の範囲内かチェック
+                    // 最も近い頂点が円内に入った場合
                     if (closestDistance <= 20000) {
-                        var listItem = document.createElement("li");
-                        listItem.textContent = `${popupText}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`;
-                        infoList.appendChild(listItem);
+                        items.push({
+                            text: `${popupText}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`,
+                            coordinates // 後で地図に多角形を追加するための座標も保存
+                        });
                     }
+                });
+
+                // 多角形を地図に追加
+                items.forEach(item => {
+                    if (item.coordinates) {
+                        L.polygon(item.coordinates, {
+                            color: 'red',
+                            fillColor: 'red',
+                            fillOpacity: 0.3,
+                            weight: 2
+                        }).addTo(map).bindPopup(item.text);
+                    }
+                });
+
+                // リストを更新
+                items.forEach(item => {
+                    var listItem = document.createElement("li");
+                    listItem.textContent = item.text;
+                    infoList.appendChild(listItem);
                 });
             })
             .catch(error => {
@@ -231,6 +206,5 @@
         alert("このブラウザでは位置情報の取得がサポートされていません。");
     }
 </script>
-
 </body>
 </html>
