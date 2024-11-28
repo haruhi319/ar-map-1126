@@ -109,6 +109,11 @@
             // ピンの情報を表示
             fetch('./suirotuuhou.json')
                 .then(response => response.json())
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log("ピンデータ:", data);
 
@@ -142,6 +147,11 @@
             // 多角形の情報を表示
             fetch('./polygons.json')
                 .then(response => response.json())
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log("多角形データ:", data);
 
