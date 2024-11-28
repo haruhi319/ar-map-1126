@@ -107,7 +107,7 @@
             infoList.innerHTML = ""; // 情報リストをクリア
 
             // ピンの情報を表示
-            fetch('suirotuuhou.json')
+            fetch('./suirotuuhou.json')
                 .then(response => response.json())
                 .then(data => {
                     console.log("ピンデータ:", data);
@@ -140,7 +140,7 @@
                 });
 
             // 多角形の情報を表示
-            fetch('polygons.json')
+            fetch('./polygons.json')
                 .then(response => response.json())
                 .then(data => {
                     console.log("多角形データ:", data);
