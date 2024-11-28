@@ -195,6 +195,9 @@
             alert("位置情報が取得できません");
         }
 
+        // 初回ピンと多角形を地図に追加
+        addPinsAndPolygons();
+
     
             var tile_layer_245df3c1bcc4aaa2a808ac24a2743e2d = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
