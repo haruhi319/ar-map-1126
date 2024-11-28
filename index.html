@@ -54,13 +54,15 @@
             iconAnchor: [12, 41], // ピンの基準点
             popupAnchor: [1, -34] // ポップアップ位置
         });
+
+        // 自分の位置を示す青いマーカー
+        var userLat, userLng;
         
         // GPS情報を取得して自分の位置を表示
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                // GPSから取得した位置情報
-                var userLat = position.coords.latitude;
-                var userLng = position.coords.longitude;
+                userLat = position.coords.latitude;
+                userLng = position.coords.longitude;
 
                 // 地図の中心を自分の位置に設定
                 map.setView([userLat, userLng], 14);
@@ -75,74 +77,100 @@
                     })
                 }).addTo(map);
 
-                // 自分の位置を中心とした半径2000mの円を描画
+                // 自分の位置を中心とした半径20000mの円を描画
                 var circle = L.circle([userLat, userLng], {
                     color: 'blue',
                     fillColor: 'blue',
                     fillOpacity: 0.3,
-                    radius: 20000 // 半径2000m
+                    radius: 20000 // 半径20000m
                 }).addTo(map);
+
+                // 半径内のピンと多角形をチェック
+                updateInfo();
             }, function(error) {
                 console.error("位置情報の取得に失敗しました:", error);
             });
         } else {
             alert("このブラウザでは位置情報の取得がサポートされていません。");
         }
-        
-        // JSONデータから読み込んだ既存のピンと多角形
-        // JSONファイルからピンを追加するコード
-        fetch('suirotuuhou.json') // JSONファイルのパスを指定
-            .then(response => response.json())
-            .then(data => {
-                console.log("ピンデータ:", data); // デバッグ用ログ
-                data.features.forEach(feature => {
-                    const geometry = feature.geometry;
-                    const attributes = feature.attributes;
 
-                    // 緯度と経度を取得
-                    const lat = geometry.y;
-                    const lng = geometry.x;
+        // 距離と向きを計算する関数
+        function calculateDistanceAndDirection(lat1, lng1, lat2, lng2) {
+            var userLocation = L.latLng(lat1, lng1);
+            var targetLocation = L.latLng(lat2, lng2);
 
-                    // name の最右単語を取得
-                    const nameParts = attributes.name.split(/[\s　、,、\-]+/); // スペースで分割
-                    const lastWord = nameParts[nameParts.length - 1]; // 最右単語
+            // 距離 (メートル)
+            var distance = userLocation.distanceTo(targetLocation);
 
-                    // 赤いピンを地図に追加
-                    const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map);
+            // 方向 (度)
+            var angle = userLocation.angleTo(targetLocation);
+            var direction = (angle + 360) % 360; // 360度方式に変換
 
-                    // ピンにポップアップを追加
-                    marker.bindPopup(lastWord);
+            return { distance: distance, direction: direction };
+        }
+
+        // 半径内のピンと多角形を更新する関数
+        function updateInfo() {
+            var infoList = document.getElementById("info-list");
+            infoList.innerHTML = ""; // 情報リストをクリア
+
+            // ピンの情報を表示
+            fetch('suirotuuhou.json')
+                .then(response => response.json())
+                .then(data => {
+                    data.features.forEach(feature => {
+                        const geometry = feature.geometry;
+                        const attributes = feature.attributes;
+                        const lat = geometry.y;
+                        const lng = geometry.x;
+                        const popupText = attributes.name; // ポップアップ内容
+
+                        // 自分の位置からの距離と向きを計算
+                        const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, lat, lng);
+
+                        // ピンが円の範囲内かチェック
+                        if (distance <= 20000) {
+                            var listItem = document.createElement("li");
+                            listItem.textContent = `${popupText}・${Math.round(distance)}m・${Math.round(direction)}°`;
+                            infoList.appendChild(listItem);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("JSONデータの読み込みに失敗しました:", error);
                 });
-            })
-            .catch(error => {
-                console.error("JSONデータの読み込みに失敗しました:", error);
-            });
 
-        // JSONファイルから多角形を追加するコード
-        fetch('polygons.json') // JSONファイルのパスを指定
-            .then(response => response.json())
-            .then(data => {
-                console.log("ポリゴンデータ:", data); // デバッグ用ログ
-                // 各ポリゴンデータを処理
-                data.forEach(polygon => {
-                    const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]); // [緯度, 経度] の形式に変換
-                    const popupText = polygon.popup; // ポップアップ内容
+            // 多角形の情報を表示
+            fetch('polygons.json')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(polygon => {
+                        const coordinates = polygon.coordinates;
+                        let closestDistance = Infinity;
+                        let closestPoint = null;
 
-                    // 多角形を地図に追加
-                    const polygonLayer = L.polygon(coordinates, {
-                        color: polygon.color || 'red', // デフォルトで赤色
-                        fillColor: polygon.color || 'red', // 塗りつぶしも赤色
-                        fillOpacity: polygon.fill_opacity || 0.3, // 半透明
-                        weight: 2 // 線の太さ
-                    }).addTo(map);
+                        // 多角形の各頂点との距離を計算し、最も近い頂点を選ぶ
+                        coordinates.forEach(coord => {
+                            const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, coord[0], coord[1]);
+                            if (distance < closestDistance) {
+                                closestDistance = distance;
+                                closestPoint = coord;
+                            }
+                        });
 
-                    // ポリゴンにポップアップをバインド
-                    polygonLayer.bindPopup(popupText);
+                        // 自分の位置から最も近い頂点が円の範囲内かチェック
+                        if (closestDistance <= 20000) {
+                            var listItem = document.createElement("li");
+                            listItem.textContent = `${polygon.popup}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`;
+                            infoList.appendChild(listItem);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("JSONデータの読み込みに失敗しました:", error);
                 });
-            })
-            .catch(error => {
-                console.error("JSONデータの読み込みに失敗しました:", error);
-            });
+        }
+
     </script>
 </body>
 </html>
