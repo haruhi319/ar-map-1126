@@ -108,87 +108,88 @@
 
             // ピンの情報を表示
             fetch('./suirotuuhou.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("ピンデータ:", data);
-                })
-
-                    data.features.forEach(feature => {
-                        const geometry = feature.geometry;
-                        const attributes = feature.attributes;
-                        const lat = geometry.y;
-                        const lng = geometry.x;
-                        const nameParts = attributes.name.split(/[\s　、,、\-]+/);
-                        const lastWord = nameParts[nameParts.length - 1];
-
-                        // 自分の位置からの距離と向きを計算
-                        const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, lat, lng);
-
-                        if (distance <= 20000) {
-                            // ピンを地図に表示
-                            L.marker([lat, lng], { icon: pinIcon }).addTo(map)
-                                .bindPopup(lastWord);
-
-                            // リストに追加
-                            var listItem = document.createElement("li");
-                            listItem.textContent = `${lastWord}・${Math.round(distance)}m・${Math.round(direction)}°`;
-                            infoList.appendChild(listItem);
-                        }
-                    });
-                .catch(error => {
-                    console.error("JSONデータの読み込みに失敗しました:", error);
-                });
-
-            // 多角形の情報を表示
-            fetch('./polygons.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("多角形データ:", data);
-                })
-                    data.forEach(polygon => {
-                        const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]);
-                        const popupText = polygon.popup;
-
-                        let closestDistance = Infinity;
-                        let closestPoint = null;
-
-                        coordinates.forEach(coord => {
-                            const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, coord[0], coord[1]);
-                            if (distance < closestDistance) {
-                                closestDistance = distance;
-                                closestPoint = coord;
-                            }
-                        });
-
-                        if (closestDistance <= 20000) {
-                            // 多角形を地図に追加
-                            L.polygon(coordinates, {
-                                color: 'red',
-                                fillColor: 'red',
-                                fillOpacity: 0.3,
-                                weight: 2
-                            }).addTo(map).bindPopup(popupText);
-
-                            // リストに追加
-                            var listItem = document.createElement("li");
-                            listItem.textContent = `${popupText}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`;
-                            infoList.appendChild(listItem);
-                        }
-                    });
-                .catch(error => {
-                    console.error("JSONデータの読み込みに失敗しました:", error);
-                });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        return response.json();
+    })
+    .then(data => {
+        console.log("ピンデータ:", data);
+
+        data.features.forEach(feature => {
+            const geometry = feature.geometry;
+            const attributes = feature.attributes;
+            const lat = geometry.y;
+            const lng = geometry.x;
+            const nameParts = attributes.name.split(/[\s　、,、\-]+/);
+            const lastWord = nameParts[nameParts.length - 1];
+
+            // 自分の位置からの距離と向きを計算
+            const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, lat, lng);
+
+            if (distance <= 20000) {
+                // ピンを地図に表示
+                L.marker([lat, lng], { icon: pinIcon }).addTo(map)
+                    .bindPopup(lastWord);
+
+                // リストに追加
+                var listItem = document.createElement("li");
+                listItem.textContent = `${lastWord}・${Math.round(distance)}m・${Math.round(direction)}°`;
+                infoList.appendChild(listItem);
+            }
+        });
+    })
+    .catch(error => {
+        console.error("JSONデータの読み込みに失敗しました:", error);
+    });
+
+// 多角形の情報を表示
+fetch('./polygons.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("多角形データ:", data);
+
+        data.forEach(polygon => {
+            const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]);
+            const popupText = polygon.popup;
+
+            let closestDistance = Infinity;
+            let closestPoint = null;
+
+            coordinates.forEach(coord => {
+                const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, coord[0], coord[1]);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestPoint = coord;
+                }
+            });
+
+            if (closestDistance <= 20000) {
+                // 多角形を地図に追加
+                L.polygon(coordinates, {
+                    color: 'red',
+                    fillColor: 'red',
+                    fillOpacity: 0.3,
+                    weight: 2
+                }).addTo(map).bindPopup(popupText);
+
+                // リストに追加
+                var listItem = document.createElement("li");
+                listItem.textContent = `${popupText}・${Math.round(closestDistance)}m・${Math.round(closestPoint[2])}°`;
+                infoList.appendChild(listItem);
+            }
+        });
+    })
+    .catch(error => {
+        console.error("JSONデータの読み込みに失敗しました:", error);
+    });
+
     </script>
 </body>
 </html>
