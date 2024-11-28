@@ -108,7 +108,7 @@
 
             // ピンの情報を表示
             fetch('./suirotuuhou.json')
-                .then(response => response.json())
+                .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
@@ -116,6 +116,7 @@
                 })
                 .then(data => {
                     console.log("ピンデータ:", data);
+                })
 
                     data.features.forEach(feature => {
                         const geometry = feature.geometry;
@@ -139,14 +140,13 @@
                             infoList.appendChild(listItem);
                         }
                     });
-                })
                 .catch(error => {
                     console.error("JSONデータの読み込みに失敗しました:", error);
                 });
 
             // 多角形の情報を表示
             fetch('./polygons.json')
-                .then(response => response.json())
+                .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
@@ -154,7 +154,7 @@
                 })
                 .then(data => {
                     console.log("多角形データ:", data);
-
+                })
                     data.forEach(polygon => {
                         const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]);
                         const popupText = polygon.popup;
@@ -185,7 +185,6 @@
                             infoList.appendChild(listItem);
                         }
                     });
-                })
                 .catch(error => {
                     console.error("JSONデータの読み込みに失敗しました:", error);
                 });
