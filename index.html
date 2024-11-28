@@ -125,11 +125,12 @@
                         const attributes = feature.attributes;
                         const lat = geometry.y;
                         const lng = geometry.x;
-                        const popupText = attributes.name; // ポップアップ内容
+                        const nameParts = attributes.name.split(/[\s　、,、\-]+/); // スペースで分割
+                        const lastWord = nameParts[nameParts.length - 1]; // 最右単語
 
                         // ピンを地図に表示
-                        L.marker([lat, lng], { icon: pinIcon }).addTo(map)
-                            .bindPopup(popupText);
+                        const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map)
+                        marker.bindPopup(lastWord);
 
                         // 自分の位置からの距離と向きを計算
                         const { distance, direction } = calculateDistanceAndDirection(userLat, userLng, lat, lng);
@@ -153,7 +154,20 @@
                     console.log("多角形データ:", data); // デバッグ用ログ
 
                     data.forEach(polygon => {
-                        const coordinates = polygon.coordinates;
+                        const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]);
+                        const popupText = polygon.popup;
+
+                        // 多角形を地図に追加
+                        const polygonLayer = L.polygon(coordinates, {
+                            color: polygon.color || 'red', // デフォルトで赤色
+                            fillColor: polygon.color || 'red', // 塗りつぶしも赤色
+                            fillOpacity: polygon.fill_opacity || 0.3, // 半透明
+                            weight: 2 // 線の太さ
+                        }).addTo(map);
+
+                        // ポリゴンにポップアップをバインド
+                        polygonLayer.bindPopup(popupText);
+                        
                         let closestDistance = Infinity;
                         let closestPoint = null;
 
