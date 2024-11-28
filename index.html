@@ -1,47 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" >
     <script>
         L_NO_TOUCH = false;
         L_DISABLE_3D = false;
     </script>
-    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
-    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
     <style>
-        #map {position: absolute; top: 0; bottom: 0; right: 0; left: 0;}
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }
         #info-box {
-            position: fixed; 
-            bottom: 10px; 
-            right: 10px; 
-            background: rgba(255, 255, 255, 0.7); 
-            padding: 10px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); 
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             font-size: 14px;
             width: 250px;
             max-height: 300px;
             overflow-y: auto;
         }
-        #info-box h5 {
-            margin: 0;
-        }
-        #info-box ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        #info-box li {
-            margin: 5px 0;
-        }
+        #info-box h5 { margin: 0; }
+        #info-box ul { list-style-type: none; padding: 0; }
+        #info-box li { margin: 5px 0; }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css">
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
 </head>
 <body>
     <div id="map"></div>
@@ -72,63 +58,67 @@
             radius: 20000
         }).addTo(map);
 
-        // 青ピンと赤多角形の情報 (仮のデータ)
-        var coordinates = [[35.5554, 140.0873]]; // 水路通報
-        var names = ['水路通報1']; // ピン名
-
-        var polygons = [
-            { coordinates: [[35.56, 139.8], [35.57, 139.8], [35.57, 139.9], [35.56, 139.9]], popup: '航行警報1', color: 'red', fillOpacity: 0.3 }
+        // JSONデータから読み込んだ既存のピンと多角形
+        var pins = [
+            { coordinates: [35.5554, 140.0873], popup: "水中障害物存在" },
+            { coordinates: [35.5163, 140.0370], popup: "防波堤一部倒壊" }
         ];
 
-        // ピンと多角形を一度だけ追加する関数
-        function addPinsAndPolygons() {
-            // 1. 青ピンの表示
-            coordinates.forEach(function(coord, index) {
-                var lat = coord[0];
-                var lon = coord[1];
-                var name = names[index];
+        var polygons = [
+            { coordinates: [[35.56, 139.8], [35.57, 139.8], [35.57, 139.9], [35.56, 139.9]], popup: "航行警報1" }
+        ];
 
-                // ピンを追加
-                var pin = L.marker([lat, lon]).addTo(map);
-                pin.bindPopup(name);
+        // 既存のピンを地図に追加
+        pins.forEach(function(pin) {
+            var marker = L.marker(pin.coordinates).addTo(map);
+            marker.bindPopup(pin.popup);
+            pin.marker = marker; // マーカーを参照できるよう保存
+        });
+
+        // 既存の多角形を地図に追加
+        polygons.forEach(function(polygon) {
+            var poly = L.polygon(polygon.coordinates, { color: 'red', fillOpacity: 0.3 }).addTo(map);
+            poly.bindPopup(polygon.popup);
+            polygon.layer = poly; // レイヤーを参照できるよう保存
+        });
+
+        // 情報を更新する関数
+        function updateInfo() {
+            var infoList = document.getElementById('info-list');
+            infoList.innerHTML = ""; // リストをクリア
+
+            var infoContent = [];
+            var userLatLng = userMarker.getLatLng();
+
+            // ピン情報の更新
+            pins.forEach(function(pin) {
+                var distance = userLatLng.distanceTo(pin.coordinates);
+                if (distance <= circle.getRadius()) {
+                    infoContent.push("<li><b>" + pin.popup + "</b> (距離: " + distance.toFixed(2) + "m)</li>");
+                }
             });
 
-            // 2. 赤多角形の表示
+            // 多角形情報の更新
             polygons.forEach(function(polygon) {
-                var poly = L.polygon(polygon.coordinates, {
-                    color: polygon.color,
-                    fillOpacity: polygon.fillOpacity
-                }).addTo(map);
-                poly.bindPopup(polygon.popup);
+                var closestPoint = getClosestPoint(userLatLng, polygon.coordinates);
+                var distance = userLatLng.distanceTo(closestPoint);
+                if (distance <= circle.getRadius()) {
+                    infoContent.push("<li><b>" + polygon.popup + "</b> (距離: " + distance.toFixed(2) + "m)</li>");
+                }
             });
-        }
-        
-        // 自分の位置から方向を計算する関数
-        function getDirection(startLatLng, endLatLng) {
-            var lat1 = startLatLng.lat;
-            var lon1 = startLatLng.lng;
-            var lat2 = endLatLng.lat;
-            var lon2 = endLatLng.lng;
 
-            var dLon = (lon2 - lon1) * Math.PI / 180;
-            var y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
-            var x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) - Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLon);
-
-            var angle = Math.atan2(y, x) * 180 / Math.PI;
-            if (angle < 0) angle += 360;
-
-            return angle;
+            infoList.innerHTML = infoContent.join('');
         }
 
         // 最寄点を取得する関数
-        function getClosestPoint(latLng, polygon) {
-            var closest = polygon[0];
-            var closestDistance = latLng.distanceTo(closest);
+        function getClosestPoint(latLng, polygonCoords) {
+            var closest = polygonCoords[0];
+            var closestDistance = latLng.distanceTo(L.latLng(closest));
 
-            polygon.forEach(function (point) {
-                var distance = latLng.distanceTo(point);
+            polygonCoords.forEach(function(coord) {
+                var distance = latLng.distanceTo(L.latLng(coord));
                 if (distance < closestDistance) {
-                    closest = point;
+                    closest = coord;
                     closestDistance = distance;
                 }
             });
@@ -136,50 +126,7 @@
             return closest;
         }
 
-        // ピンと多角形の情報を表示するための関数
-        function updateInfo() {
-            var infoList = document.getElementById('info-list');
-            infoList.innerHTML = ""; // 情報リストをクリア
-
-            var infoContent = [];
-
-            // 1. 青いピンの情報を表示
-            coordinates.forEach(function(coord, index) {
-                var lat = coord[0];
-                var lon = coord[1];
-                var name = names[index];
-
-                var distance = map.latLng([lat, lon]).distanceTo(userMarker.getLatLng());
-                var direction = getDirection(userMarker.getLatLng(), L.latLng(lat, lon));
-
-                // 自分の位置から20000m円内にピンが入っているかチェック
-                if (userMarker.getLatLng().distanceTo([lat, lon]) <= 20000) {
-                    infoContent.push("<li><b>" + name + "</b> (距離: " + distance.toFixed(2) + "m, 方向: " + direction.toFixed(2) + "°)</li>");
-                }
-            });
-
-            // 2. 赤多角形の情報を表示
-            polygons.forEach(function(polygon) {
-                var poly = L.polygon(polygon.coordinates, {
-                    color: polygon.color,
-                    fillOpacity: polygon.fillOpacity
-                }).addTo(map);
-
-                var closestPoint = getClosestPoint(userMarker.getLatLng(), poly.getLatLngs());
-                var closestDistance = userMarker.getLatLng().distanceTo(closestPoint);
-                var closestDirection = getDirection(userMarker.getLatLng(), closestPoint);
-
-                // 自分の位置から20000m円内に多角形が入っているかチェック
-                if (userMarker.getLatLng().distanceTo(closestPoint) <= 20000) {
-                    infoContent.push("<li><b>" + polygon.popup + "</b> (最寄点距離: " + closestDistance.toFixed(2) + "m, 方向: " + closestDirection.toFixed(2) + "°)</li>");
-                }
-            });
-
-            // 情報を画面右下に表示
-            infoList.innerHTML = infoContent.join('');
-        }
-
-        // 位置情報が更新されるたびに情報を更新
+        // 位置情報を監視し、更新
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(function(position) {
                 var lat = position.coords.latitude;
@@ -194,11 +141,7 @@
         } else {
             alert("位置情報が取得できません");
         }
-
-        // 初回ピンと多角形を地図に追加
-        addPinsAndPolygons();
-
-    
+            
             var tile_layer_245df3c1bcc4aaa2a808ac24a2743e2d = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
