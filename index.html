@@ -9,140 +9,99 @@
     <style>
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; right: 0; left: 0; }
-        #info-box {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            font-size: 14px;
-            width: 250px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        #info-box h5 { margin: 0; }
-        #info-box ul { list-style-type: none; padding: 0; }
-        #info-box li { margin: 5px 0; }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css">
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
 </head>
 <body>
     <div id="map"></div>
-    <div id="info-box">
-        <h5>情報</h5>
-        <ul id="info-list"></ul>
-    </div>
 
     <script>
-        var map = L.map('map', {
+        // 地図の初期設定
+        const map = L.map('map', {
             center: [35.5, 139.8],
             zoom: 10,
             zoomControl: true
         });
 
-        var tileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        // タイルレイヤーを追加
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // 自分の位置を示す青いピンアイコンURLを修正
-        const pinIcon = L.icon({
-            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png', // 通常のピンURL
-            iconSize: [25, 41], // ピンの大きさ
-            iconAnchor: [12, 41], // ピンの基準点
-            popupAnchor: [1, -34] // ポップアップ位置
+        // 青いピンアイコンの設定
+        const bluePinIcon = L.icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-blue.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
         });
-        
-        // GPS情報を取得して自分の位置を表示
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                // GPSから取得した位置情報
-                var userLat = position.coords.latitude;
-                var userLng = position.coords.longitude;
 
-                // 地図の中心を自分の位置に設定
+        // 現在位置を取得して青いマーカーを表示
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // 地図の中心を現在位置に設定
                 map.setView([userLat, userLng], 14);
 
-                // 自分の位置を青いマーカーで表示
-                var userMarker = L.marker([userLat, userLng], {
-                    icon: L.icon({
-                        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-blue.png', // 青いピンのURL
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34]
-                    })
-                }).addTo(map);
+                // 現在位置にマーカーを追加
+                L.marker([userLat, userLng], { icon: bluePinIcon }).addTo(map);
 
-                // 自分の位置を中心とした半径2000mの円を描画
-                var circle = L.circle([userLat, userLng], {
+                // 現在位置を中心に半径2000mの円を追加
+                L.circle([userLat, userLng], {
                     color: 'blue',
                     fillColor: 'blue',
                     fillOpacity: 0.3,
-                    radius: 2000 // 半径2000m
+                    radius: 2000
                 }).addTo(map);
-            }, function(error) {
+            }, error => {
                 console.error("位置情報の取得に失敗しました:", error);
             });
         } else {
             alert("このブラウザでは位置情報の取得がサポートされていません。");
         }
-        
-        // JSONデータから読み込んだ既存のピンと多角形
-        // JSONファイルからピンを追加するコード
-        fetch('suirotuuhou.json') // JSONファイルのパスを指定
+
+        // suirotuuhou.json からピンを追加
+        fetch('suirotuuhou.json')
             .then(response => response.json())
             .then(data => {
-                console.log("ピンデータ:", data); // デバッグ用ログ
                 data.features.forEach(feature => {
-                    const geometry = feature.geometry;
-                    const attributes = feature.attributes;
-
-                    // 緯度と経度を取得
+                    const { geometry, attributes } = feature;
                     const lat = geometry.y;
                     const lng = geometry.x;
 
-                    // name の最右単語を取得
-                    const nameParts = attributes.name.split(/[\s　、,、\-]+/); // スペースで分割
-                    const lastWord = nameParts[nameParts.length - 1]; // 最右単語
+                    // 名前の最後の単語を取得
+                    const nameParts = attributes.name.split(/[\s　、,、\-]+/);
+                    const lastWord = nameParts[nameParts.length - 1];
 
-                    // 赤いピンを地図に追加
-                    const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map);
-
-                    // ピンにポップアップを追加
-                    marker.bindPopup(lastWord);
+                    // 地図にピンを追加
+                    L.marker([lat, lng], { icon: bluePinIcon })
+                        .addTo(map)
+                        .bindPopup(lastWord);
                 });
             })
-            .catch(error => {
-                console.error("JSONデータの読み込みに失敗しました:", error);
-            });
+            .catch(error => console.error("JSONデータの読み込みに失敗しました:", error));
 
-        // JSONファイルから多角形を追加するコード
-        fetch('polygons.json') // JSONファイルのパスを指定
+        // polygons.json から多角形を追加
+        fetch('polygons.json')
             .then(response => response.json())
             .then(data => {
-                console.log("ポリゴンデータ:", data); // デバッグ用ログ
-                // 各ポリゴンデータを処理
                 data.forEach(polygon => {
-                    const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]); // [緯度, 経度] の形式に変換
-                    const popupText = polygon.popup; // ポップアップ内容
+                    const coordinates = polygon.coordinates.map(coord => [coord[0], coord[1]]);
+                    const popupText = polygon.popup;
 
                     // 多角形を地図に追加
-                    const polygonLayer = L.polygon(coordinates, {
-                        color: polygon.color || 'red', // デフォルトで赤色
-                        fillColor: polygon.color || 'red', // 塗りつぶしも赤色
-                        fillOpacity: polygon.fill_opacity || 0.3, // 半透明
-                        weight: 2 // 線の太さ
-                    }).addTo(map);
-
-                    // ポリゴンにポップアップをバインド
-                    polygonLayer.bindPopup(popupText);
+                    L.polygon(coordinates, {
+                        color: polygon.color || 'red',
+                        fillColor: polygon.color || 'red',
+                        fillOpacity: polygon.fill_opacity || 0.3,
+                        weight: 2
+                    }).addTo(map).bindPopup(popupText);
                 });
             })
-            .catch(error => {
-                console.error("JSONデータの読み込みに失敗しました:", error);
-            });
+            .catch(error => console.error("JSONデータの読み込みに失敗しました:", error));
     </script>
 </body>
 </html>
