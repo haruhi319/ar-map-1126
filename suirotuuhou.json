@@ -22,6 +22,105 @@
     }],
     "features": [{
         "attributes": {
+            "name": "テスト用1　テストお台場",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.7742840000000,
+            "y": 35.63008100000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用2　テストレインボーブリッジ",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.7641560000000,
+            "y": 35.638010000000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用3　テスト日の出桟橋",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.7610660000000,
+            "y": 35.65051900000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用4　テスト1",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.77065940000000,
+            "y": 35.63278110000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用5　テスト2",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.7693354020000000,
+            "y": 35.637051100000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用4　テスト3",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.76705620000000,
+            "y": 35.64211980000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用5　テスト4",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.77048040000000,
+            "y": 35.645700200000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用4　テスト5",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.76801950000000,
+            "y": 35.64965590000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用5　テスト6",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.76434620000000,
+            "y": 35.647788300000000
+        }
+    },{
+        "attributes": {
+             "name": "テスト用7　汐路丸",
+             "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.770930000000,
+            "y": 35.6523400000000
+        }
+    },{
+        "attributes": {
+            "name": "テスト用8　芝浦ふ頭",
+            "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
+        },
+        "geometry": {
+            "x": 139.758020000000,
+            "y": 35.6431600000000
+        }
+    },{
+        "attributes": {
             "name": "東京湾　\u2212　千葉港、千葉区第2区　　水中障害物存在",
             "description": "三管区水路通報2019年1428項\n\u003chr size=\"1\"\u003e  (三管区水路通報元年45号1387項削除)\n  千葉区第2区の下記地点に水中障害物が存在する。\n  位  置      35-33-19.3N  140-05-14.4E \n  備  考      錨鎖存在  \n  海  図      W1086\n  出  所      千葉海上保安部\n\u003ca href=\"https://www.msil.go.jp/msil/Data/NwNtmConstraints_j.pdf\" target=\"_blank\"\u003e[利用上の制限事項]\u003c/a\u003e\n\t"
         },
